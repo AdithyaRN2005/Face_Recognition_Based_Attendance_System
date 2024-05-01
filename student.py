@@ -327,29 +327,33 @@ class Student:
                 #Saving data to sql
                 conn = mysql.connector.connect(username='root', password=pwd,host='localhost',database='face_recognition')
                 mycursor = conn.cursor()
-                mycursor.execute("insert into student values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(
-                
-                self.var_rollno.get(),
-                self.var_name.get(),
-                self.var_course.get(),
-                self.var_dept.get(),                
-                self.var_year.get(),
-                self.var_sem.get(),
-                self.var_gen.get(),
-                self.var_DOB.get(),
-                self.var_mail.get(),
-                self.var_num.get(),
-                self.var_address.get(),
-                self.username
-                ))
-
-                conn.commit()
-
-                mycursor.execute("insert into instructor"+self.username+"(rollno,student) values(%s,%s)", (
+                mycursor.execute("select rollno from instructor"+self.username)
+                dataroll=mycursor.fetchall()
+                if (str(self.var_rollno.get()),) not in dataroll:
+                    mycursor.execute("insert into instructor"+self.username+"(rollno,student) values(%s,%s)", (
                                  self.var_rollno.get(),
                                  self.var_name.get()
-                ))
-                conn.commit()
+                    ))
+                    conn.commit()
+                    mycursor.execute("insert into student values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(
+                
+                    self.var_rollno.get(),
+                    self.var_name.get(),
+                    self.var_course.get(),
+                    self.var_dept.get(),                
+                    self.var_year.get(),
+                    self.var_sem.get(),
+                    self.var_gen.get(),
+                    self.var_DOB.get(),
+                    self.var_mail.get(),
+                    self.var_num.get(),
+                    self.var_address.get(),
+                    self.username
+                    ))
+
+                    conn.commit()
+
+                
 
                 self.fetch_data()
                 conn.close()
@@ -400,28 +404,32 @@ class Student:
                 if Update > 0:
                     conn = mysql.connector.connect(username='root', password=pwd,host='localhost',database='face_recognition')
                     mycursor = conn.cursor()
-                    mycursor.execute("update student set Name=%s,Course=%s,Department=%s,Year=%s,Semester=%s,Gender=%s,DOB=%s,Email=%s,Mobile_No=%s,Address=%s where Roll_No=%s and instructor=%s",( 
-            
-                    self.var_name.get(),
-                    self.var_course.get(),
-                    self.var_dept.get(),                
-                    self.var_year.get(),
-                    self.var_sem.get(),
-                    self.var_gen.get(),
-                    self.var_DOB.get(),
-                    self.var_mail.get(),
-                    self.var_num.get(),
-                    self.var_address.get(),
-                    self.var_rollno.get(),
-                    self.username
-                    ))
-                    conn.commit()
                     mycursor.execute("show tables")
                     data=mycursor.fetchall()
                     for i in data:
                         if "instructor"+self.username in i[0]:
-                            mycursor.execute("update instructor"+self.username+" set student=%s where rollno=%s",(self.var_name.get(),self.var_rollno.get(),))
-                            conn.commit()
+                            mycursor.execute("select rollno from instructor"+self.username)
+                            dataroll=mycursor.fetchall()
+                            if (str(self.var_rollno.get()),) not in dataroll:
+                                mycursor.execute("update instructor"+self.username+" set student=%s where rollno=%s",(self.var_name.get(),self.var_rollno.get(),))
+                                conn.commit()
+
+                                mycursor.execute("update student set Name=%s,Course=%s,Department=%s,Year=%s,Semester=%s,Gender=%s,DOB=%s,Email=%s,Mobile_No=%s,Address=%s where Roll_No=%s and instructor=%s",( 
+                                        
+                                self.var_name.get(),
+                                self.var_course.get(),
+                                self.var_dept.get(),                
+                                self.var_year.get(),
+                                self.var_sem.get(),
+                                self.var_gen.get(),
+                                self.var_DOB.get(),
+                                self.var_mail.get(),
+                                self.var_num.get(),
+                                self.var_address.get(),
+                                self.var_rollno.get(),
+                                self.username
+                                ))
+                                conn.commit()
                 else:
                     if not Update:
                         return
